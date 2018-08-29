@@ -19,4 +19,11 @@ class TestController extends Controller
             'message' => $message
         ]);
     }
+
+    public function actionChat(){
+
+        return $this->render('chat', []);
+    }
+
+
 }
