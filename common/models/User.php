@@ -5,6 +5,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\validators\UniqueValidator;
 use yii\web\IdentityInterface;
 
 /**
@@ -17,14 +18,28 @@ use yii\web\IdentityInterface;
  * @property string $email
  * @property string $auth_key
  * @property integer $status
+ * @property integer $avatar
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $password write-only password
+ *
+ * @mixin \mohorev\file\UploadImageBehavior
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+    private $_password;
     const STATUS_DELETED = 0;
     const STATUS_ACTIVE = 10;
+    const STATUSES = [
+        self::STATUS_ACTIVE => 'активен',
+        self::STATUS_DELETED => 'удален'
+    ];
+
+    const SCENARIO_ADMIN_CREATE = 'ADMIN_CREATE';
+    const SCENARIO_ADMIN_UPDATE = 'ADMIN_UPDATE';
+
+    const AVATAR_ICON = 'icon';
+    const AVATAR_THUMB = 'thumb';
 
 
     /**
@@ -42,6 +57,18 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             TimestampBehavior::className(),
+            [
+                'class' => \mohorev\file\UploadImageBehavior::class,
+                'attribute' => 'avatar',
+                'scenarios' => [self::SCENARIO_ADMIN_UPDATE, self::SCENARIO_ADMIN_CREATE],
+//                'placeholder' => '@app/modules/user/assets/images/userpic.jpg',
+                'path' => '@frontend/web/upload/avatar/{id}',
+                'url' => 'http://frontend.test/upload/avatar/{id}',
+                'thumbs' => [
+                    self::AVATAR_THUMB => ['width' => 400, 'quality' => 90],
+                    self::AVATAR_ICON => ['width' => 30, 'height' => 30],
+                ],
+            ]
         ];
     }
 
@@ -53,8 +80,27 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+
+            ['avatar', 'file', 'extensions' => ['jpeg', 'gif', 'jpg']],
+            [['password', 'email', 'username'], 'required', 'on' => self::SCENARIO_ADMIN_CREATE],
+            [['email', 'username'], 'required', 'on' => self::SCENARIO_ADMIN_UPDATE],
+            ['email', 'email', 'on' => [self::SCENARIO_ADMIN_CREATE, self::SCENARIO_ADMIN_UPDATE]],
+            ['password', 'safe', 'on' => self::SCENARIO_ADMIN_CREATE],
+            ['username', UniqueValidator::class, 'on' => [self::SCENARIO_ADMIN_CREATE, self::SCENARIO_ADMIN_UPDATE]]
         ];
     }
+
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)){
+            return false;
+        }
+        if ($insert){
+            $this->generateAuthKey();
+        }
+        return true;
+    }
+
 
     /**
      * {@inheritdoc}
@@ -153,6 +199,11 @@ class User extends ActiveRecord implements IdentityInterface
         return Yii::$app->security->validatePassword($password, $this->password_hash);
     }
 
+    public function getPassword()
+    {
+        return $this->_password;
+    }
+
     /**
      * Generates password hash from password and sets it to the model
      *
@@ -161,6 +212,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function setPassword($password)
     {
         $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+        $this->_password = $password;
     }
 
     /**

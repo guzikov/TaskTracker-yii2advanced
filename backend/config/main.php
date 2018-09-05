@@ -11,6 +11,8 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
+    'layout' => 'adminlte/main',
+    'language' => 'ru',
     'modules' => [],
     'components' => [
         'view' => [
@@ -48,6 +50,8 @@ return [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                '<controller:[\w-]+>/<id:\d+>' => '<controller>/view',
+                '<controller:(task|project|user)>s' => '<controller>/index'
             ],
         ],
     ],
