@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use common\models\ProjectUser;
 use Yii;
 use common\models\Project;
 use common\models\ProjectSearch;
@@ -66,7 +67,7 @@ class ProjectController extends Controller
     {
         $model = new Project();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($this->loadModel($model) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -93,6 +94,17 @@ class ProjectController extends Controller
         return $this->render('update', [
             'model' => $model,
         ]);
+    }
+
+    private function loadModel(Project $model)
+    {
+        $data = Yii::$app->request->post($model->formName());
+        $projectUsers = $data[Project::RELATION_PROJECT_USERS] ?? null;
+        if ($projectUsers !== null){
+            $model->projectUsers = $projectUsers === '' ? [] : $projectUsers;
+        }
+
+        return $model->load(Yii::$app->request->post());
     }
 
     /**

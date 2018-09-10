@@ -238,4 +238,8 @@ class User extends ActiveRecord implements IdentityInterface
     {
         $this->password_reset_token = null;
     }
+
+    public static function usersList(){
+        return User::find()->select('username')->indexBy('id')->column();
+    }
 }
