@@ -5,6 +5,7 @@ use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\VarDumper;
 use yii\validators\UniqueValidator;
 use yii\web\IdentityInterface;
 
@@ -63,7 +64,7 @@ class User extends ActiveRecord implements IdentityInterface
                 'scenarios' => [self::SCENARIO_ADMIN_UPDATE, self::SCENARIO_ADMIN_CREATE],
 //                'placeholder' => '@app/modules/user/assets/images/userpic.jpg',
                 'path' => '@frontend/web/upload/avatar/{id}',
-                'url' => 'http://frontend.test/upload/avatar/{id}',
+                'url' => Yii::$app->params['front.scheme'] . Yii::$app->params['front.domain'] .'/upload/avatar/{id}',
                 'thumbs' => [
                     self::AVATAR_THUMB => ['width' => 400, 'quality' => 90],
                     self::AVATAR_ICON => ['width' => 30, 'height' => 30],
@@ -211,7 +212,11 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public function setPassword($password)
     {
-        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+        VarDumper::dump($password, 5, true);
+        if ($password){
+            $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+        }
+
         $this->_password = $password;
     }
 

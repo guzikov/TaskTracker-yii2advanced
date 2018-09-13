@@ -3,12 +3,14 @@
 namespace backend\controllers;
 
 use common\models\ProjectUser;
+use common\models\User;
 use Yii;
 use common\models\Project;
 use common\models\ProjectSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use common\services\ProjectService;
 
 /**
  * ProjectController implements the CRUD actions for Project model.
@@ -86,8 +88,15 @@ class ProjectController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+//        $projectUsers = $model->getUsersData();
+        $projectUsers = $model->getUsersData();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($this->loadModel($model) && $model->save()) {
+            if ($diffRoles = array_diff_assoc($model->getUsersData(), $projectUsers)){
+                foreach ($diffRoles as $userId => $diffRole){
+                    Yii::$app->projectService->assignRole($model, User::findOne($userId), $diffRole);
+                }
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -136,4 +145,5 @@ class ProjectController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+
 }

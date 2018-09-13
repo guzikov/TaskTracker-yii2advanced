@@ -11,6 +11,7 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
+    'language' => 'ru',
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-frontend',
@@ -48,7 +49,7 @@ return [
                     'controller' => 'api/user'
                 ],
                 '<controller:[\w-]+>/<id:\d+>' => '<controller>/view',
-                '<controller:[\w-]+>s' => '<controller>/index'
+                '<controller:(task|project|user)>s' => '<controller>/index'
             ],
         ],
     ],

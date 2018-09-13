@@ -2,6 +2,8 @@
 
 namespace common\models;
 
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsTrait;
 use Yii;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -21,6 +23,7 @@ use yii\behaviors\TimestampBehavior;
  * @property User $creator
  * @property User $updater
  * @property ProjectUser[] $projectUsers
+ * @mixin SaveRelationsTrait
  */
 class Project extends \yii\db\ActiveRecord
 {
@@ -49,8 +52,8 @@ class Project extends \yii\db\ActiveRecord
         return [
             [['description', 'created_by', 'created_at'], 'required'],
             [['description'], 'string'],
-            [['active'], 'boolean'],
-            [['created_by', 'updated_by', 'created_at', 'updated_at'], 'integer'],
+//            [['active'], 'boolean'],
+            [['created_by', 'updated_by', 'created_at', 'updated_at', 'active'], 'integer'],
             [['title'], 'string', 'max' => 255],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
@@ -62,6 +65,10 @@ class Project extends \yii\db\ActiveRecord
         return [
             ['class' => TimestampBehavior::class],
             ['class' => BlameableBehavior::class],
+            'saveRelations' => [
+                'class'     => SaveRelationsBehavior::className(),
+                'relations' => ['projectUsers'],
+            ],
         ];
     }
 
@@ -104,6 +111,10 @@ class Project extends \yii\db\ActiveRecord
     public function getProjectUsers()
     {
         return $this->hasMany(ProjectUser::className(), ['project_id' => 'id']);
+    }
+
+    public function getUsersData(){
+        return $this->getProjectUsers()->select('role')->indexBy('user_id')->column();
     }
 
     /**
