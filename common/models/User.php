@@ -247,4 +247,14 @@ class User extends ActiveRecord implements IdentityInterface
     public static function usersList(){
         return User::find()->select('username')->indexBy('id')->column();
     }
+
+    public function getAvatar()
+    {
+        return $this->getThumbUploadUrl('avatar', User::AVATAR_ICON);
+    }
+
+    public function getUsername()
+    {
+        return $this->username;
+    }
 }

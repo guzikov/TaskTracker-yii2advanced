@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\models\query\ProjectUserQuery;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsTrait;
 use Yii;
@@ -50,7 +51,7 @@ class Project extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['description', 'created_by', 'created_at'], 'required'],
+            [['description'], 'required'],
             [['description'], 'string'],
 //            [['active'], 'boolean'],
             [['created_by', 'updated_by', 'created_at', 'updated_at', 'active'], 'integer'],
@@ -67,7 +68,7 @@ class Project extends \yii\db\ActiveRecord
             ['class' => BlameableBehavior::class],
             'saveRelations' => [
                 'class'     => SaveRelationsBehavior::className(),
-                'relations' => ['projectUsers'],
+                'relations' => [self::RELATION_PROJECT_USERS],
             ],
         ];
     }
@@ -106,7 +107,7 @@ class Project extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ProjectUserQuery|\yii\db\ActiveQuery
      */
     public function getProjectUsers()
     {
@@ -125,4 +126,6 @@ class Project extends \yii\db\ActiveRecord
     {
         return new \common\models\query\ProjectQuery(get_called_class());
     }
+
+
 }

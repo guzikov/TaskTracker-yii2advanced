@@ -7,6 +7,7 @@ use common\models\User;
 use Yii;
 use common\models\Project;
 use common\models\ProjectSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -29,6 +30,15 @@ class ProjectController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@']
+                    ]
+                ]
+            ]
         ];
     }
 
@@ -69,7 +79,8 @@ class ProjectController extends Controller
     {
         $model = new Project();
 
-        if ($this->loadModel($model) && $model->save()) {
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            $model->getErrors();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

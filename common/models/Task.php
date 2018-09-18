@@ -22,9 +22,9 @@ use yii\behaviors\TimestampBehavior;
  * @property int $created_at
  * @property int $updated_at
  *
- * @property User $createdBy
+ * @property User $creator
  * @property User $executor
- * @property User $updatedBy
+ * @property User $updater
  */
 class Task extends \yii\db\ActiveRecord
 {
@@ -91,7 +91,7 @@ class Task extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getCreatedBy()
+    public function getCreator()
     {
         return $this->hasOne(User::className(), ['id' => 'created_by']);
     }
@@ -107,7 +107,7 @@ class Task extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getUpdatedBy()
+    public function getUpdater()
     {
         return $this->hasOne(User::className(), ['id' => 'updated_by']);
     }

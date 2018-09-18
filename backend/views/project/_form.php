@@ -28,35 +28,65 @@ use yii\bootstrap\ActiveForm;
 
     <?= $form->field($model, 'active')->dropDownList(\common\models\Project::STATUSES) ?>
 
+    <?php if (!$model->isNewRecord): ?>
     <?= $form->field($model, \common\models\Project::RELATION_PROJECT_USERS)->widget
     (\unclead\multipleinput\MultipleInput::className(),[
-            'id' => 'project-users-widget',
-            'max'               => 10,
-            'min'               => 0,
-            'allowEmptyList'    => false,
-            'enableGuessTitle'  => true,
-            'addButtonPosition' => \unclead\multipleinput\MultipleInput::POS_HEADER,
-            'columns' => [
-                    [
-                            'name' => 'project_id',
-                            'type' => 'hiddenInput',
-                            'defaultValue' =>$model->id,
-                    ],
-                    [
-                        'name' => 'user_id',
-                        'type' => 'dropDownList',
-                        'title' => 'Пользователь',
-                        'items' => \common\models\User::usersList()
-                    ],
-                    [
-                        'name' => 'role',
-                        'type' => 'dropDownList',
-                        'title' => 'Должность',
-                        'items' => \common\models\ProjectUser::ROLES
-                    ],
-            ]
+        'id' => 'project-users-widget',
+        'max'               => 10,
+        'min'               => 0,
+        'allowEmptyList'    => false,
+        'enableGuessTitle'  => true,
+        'addButtonPosition' => \unclead\multipleinput\MultipleInput::POS_HEADER,
+        'columns' => [
+            [
+                'name' => 'project_id',
+                'type' => 'hiddenInput',
+                'defaultValue' => $model->id,
+            ],
+            [
+                'name' => 'user_id',
+                'type' => 'dropDownList',
+                'title' => 'Пользователь',
+                'items' => \common\models\User::usersList()
+            ],
+            [
+                'name' => 'role',
+                'type' => 'dropDownList',
+                'title' => 'Должность',
+                'items' => \common\models\ProjectUser::ROLES
+            ],
+        ]
     ]);
     ?>
+
+    <?php else: ?>
+
+    <?= $form->field($model, \common\models\Project::RELATION_PROJECT_USERS)->widget
+    (\unclead\multipleinput\MultipleInput::className(),[
+        'id' => 'project-users-widget',
+        'max'               => 10,
+        'min'               => 0,
+        'allowEmptyList'    => false,
+        'enableGuessTitle'  => true,
+        'addButtonPosition' => \unclead\multipleinput\MultipleInput::POS_HEADER,
+        'columns' => [
+            [
+                'name' => 'user_id',
+                'type' => 'dropDownList',
+                'title' => 'Пользователь',
+                'items' => \common\models\User::usersList()
+            ],
+            [
+                'name' => 'role',
+                'type' => 'dropDownList',
+                'title' => 'Должность',
+                'items' => \common\models\ProjectUser::ROLES
+            ],
+        ]
+    ]);
+    ?>
+
+    <?php endif; ?>
 
 
     <div class="form-group">

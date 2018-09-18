@@ -36,10 +36,13 @@ AppAsset::register($this);
         ],
     ]);
     $menuItems = [
+        ['label' => 'Projects', 'url' => ['/projects'], 'visible' => !Yii::$app->user->isGuest],
+        ['label' => 'Tasks', 'url' => ['/tasks'], 'visible' => !Yii::$app->user->isGuest],
         ['label' => 'Chat', 'url' => ['/test/chat']],
         ['label' => 'Home', 'url' => ['/site/index']],
         ['label' => 'About', 'url' => ['/site/about']],
         ['label' => 'Contact', 'url' => ['/site/contact']],
+        ['label' => 'Profile', 'url' => ['/user/profile'], 'visible' => !Yii::$app->user->isGuest],
     ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];

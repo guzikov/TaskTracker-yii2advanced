@@ -5,22 +5,22 @@ use yii\helpers\Html;
 /* @var $content string */
 
 
-if (Yii::$app->controller->action->id === 'login') { 
-/**
- * Do not use this code in your template. Remove it. 
- * Instead, use the code  $this->layout = '//main-login'; in your controller.
- */
-    echo $this->render(
-        'main-login',
-        ['content' => $content]
-    );
-} else {
+//if (Yii::$app->controller->action->id === 'login') {
+///**
+// * Do not use this code in your template. Remove it.
+// * Instead, use the code  $this->layout = '//main-login'; in your controller.
+// */
+//    echo $this->render(
+//        'main-login',
+//        ['content' => $content]
+//    );
+//} else {
 
-    if (class_exists('backend\assets\AppAsset')) {
+//    if (class_exists('backend\assets\AppAsset')) {
         backend\assets\AppAsset::register($this);
-    } else {
-        app\assets\AppAsset::register($this);
-    }
+//    } else {
+//        app\assets\AppAsset::register($this);
+//    }
 
     dmstr\web\AdminLteAsset::register($this);
 
@@ -62,4 +62,4 @@ if (Yii::$app->controller->action->id === 'login') {
     </body>
     </html>
     <?php $this->endPage() ?>
-<?php } ?>
+<?php //} ?>
